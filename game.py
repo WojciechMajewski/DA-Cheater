@@ -74,6 +74,16 @@ class Game():
         self.previous_declaration = self.declared_card
         decision = activePlayer.putCard(self.declared_card)
 
+        if log:
+            try:
+                print("DziMaj", activePlayer.known_pile)
+            except:
+                print("Random player")
+            try:
+                print("DziMaj", opponent.known_pile)
+            except:
+                print("Random player")
+
         if decision == "draw":
 
             if log: print("[+] " + activePlayer.name + " decides to draw cards")
