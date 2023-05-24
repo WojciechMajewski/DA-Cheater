@@ -33,6 +33,11 @@ class Game():
         ### Which player moves
         self.player_move = np.random.randint(2)
 
+
+        ### DEBUG
+        self.good_checks = 0
+        self.failed_checks = 0
+
     def getDeck(self):
         return [(number, color) for color in range(4) for number in range(9, 15)]
 
@@ -58,8 +63,18 @@ class Game():
             print("==== CURRENT STATE ================================")
             print("==== " + self.players[self.player_move].name + " MOVES ====")
             print("Player (0): " + self.players[0].name + " hand:")
+            try:
+                print("Known pile:", self.players[0].known_pile)
+                print("Ever seen:", self.players[0].ever_seen)
+            except:
+                pass
             print(self.players[0].cards)
             print("Player (1): " + self.players[1].name + " hand:")
+            try:
+                print("Known pile:", self.players[1].known_pile)
+                print("Ever seen:", self.players[1].ever_seen)   
+            except:
+                pass
             print(self.players[1].cards)
             print("Pile: ")
             print(self.pile)
@@ -73,16 +88,6 @@ class Game():
 
         self.previous_declaration = self.declared_card
         decision = activePlayer.putCard(self.declared_card)
-
-        if log:
-            try:
-                print("DziMaj", activePlayer.known_pile)
-            except:
-                print("Random player")
-            try:
-                print("DziMaj", opponent.known_pile)
-            except:
-                print("Random player")
 
         if decision == "draw":
 
@@ -130,6 +135,8 @@ class Game():
 
                 if not self.true_card == self.declared_card:
                     if log: print("\tYou are right!")
+                    if opponent.name == "DzialoMajewski":
+                        self.good_checks += 1
                     activePlayer.takeCards(toTake)
 
                     activePlayer.getCheckFeedback(True, False, True, None, len(toTake), log)
@@ -138,6 +145,8 @@ class Game():
                     for c in toTake: self.player_cards[self.player_move].append(c)
                 else:
                     if log: print("\tYou are wrong!")
+                    if opponent.name == "DzialoMajewski":
+                        self.failed_checks += 1
                     opponent.takeCards(toTake)
 
                     activePlayer.getCheckFeedback(True, False, False, None, len(toTake), log)
@@ -161,6 +170,10 @@ class Game():
     def isFinished(self, log=False):
         if len(self.players[self.player_move].cards) == 0:
             if log: print(self.players[self.player_move].name + " wins!")
+            try:
+                print("check accuracy of DzialoMajewski: ", self.good_checks / (self.good_checks + self.failed_checks))
+            except:
+                print("check accuracy of DzialoMajewski: No checks performed")
             return True
         return False
 

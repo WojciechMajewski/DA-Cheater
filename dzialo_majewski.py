@@ -2,9 +2,11 @@ import numpy as np
 from player import Player
 
 class DzialoMajewski(Player):
-    first_player = None
-    known_pile = []
-    ever_seen = set()
+    def __init__(self, name):
+        super().__init__(name)
+        self.first_player = None
+        self.known_pile = []
+        self.ever_seen = set()
 
     def putCard(self, declared_card):
         if self.first_player == None:
@@ -66,15 +68,21 @@ class DzialoMajewski(Player):
         ### If I remember that I've put the declared card on the pile and it is still there, they are lying!
         if opponent_declaration in self.known_pile:
             return True
-
+        
+        
         ### If they declare an Ace and I don't have one, I will need it for my last move so I check. Perhaps they were lying, even better for me!
         if opponent_declaration[0] == 14 and sorted(self.cards)[-1][0] < 14:
             return True
+            
         
         return False
 
     ### Reiplemented to get extra information
     def getCheckFeedback(self, checked, iChecked, iDrewCards, revealedCard, noTakenCards, log=True):
+        
+        ### sort hand, time efficiency:
+        self.cards = sorted(self.cards)
+
 
         ### Remove all drawn cards from the memory pile
         if checked and noTakenCards != None:
